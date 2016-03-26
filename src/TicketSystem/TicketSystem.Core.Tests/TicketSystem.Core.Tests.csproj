@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TicketSytem.Core\TicketSytem.Core.csproj">
+    <ProjectReference Include="..\TicketSystem.Core\TicketSystem.Core.csproj">
       <Project>{6bbf3db1-8499-4761-9f35-2dfc60e76259}</Project>
-      <Name>TicketSytem.Core</Name>
+      <Name>TicketSystem.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8B4CDBAA-3073-4082-A22B-2F3043496AFC}</ProjectGuid>
+    <ProjectGuid>{773E8213-60AB-4643-8783-E2D9D58AAC23}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TicketSystem.ThreadManager</RootNamespace>
-    <AssemblyName>TicketSystem.ThreadManager</AssemblyName>
+    <RootNamespace>TicketSystem.Retail</RootNamespace>
+    <AssemblyName>TicketSystem.Retail</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,14 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ThreadContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TicketSystem.Core\TicketSystem.Core.csproj">
-      <Project>{6bbf3db1-8499-4761-9f35-2dfc60e76259}</Project>
-      <Name>TicketSystem.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

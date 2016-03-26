@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TicketSystem.Message
+namespace TicketSystem.Agent
 {
-    [Serializable]
-    public class Message
+    class Program
     {
-        public int MessageId { get; set; }
-     
+        static void Main(string[] args)
+        {
+        }
     }
 }

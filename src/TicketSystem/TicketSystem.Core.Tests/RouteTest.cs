@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TicketSytem.Core;
+using TicketSystem.Core;
 namespace TicketSystem.Core.Tests
 {
     [TestClass]

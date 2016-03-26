@@ -52,8 +52,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientProxy.cs" />
     <Compile Include="RedisHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedisHost.cs" />
+    <Compile Include="RedisPackage.cs" />
+    <Compile Include="Timeouts.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TicketSystem.Utils\TicketSystem.Utils.csproj">
+      <Project>{157d5c74-91e7-4cf9-a68e-f065df633689}</Project>
+      <Name>TicketSystem.Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

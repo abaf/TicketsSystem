@@ -41,6 +41,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TicketRetail.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TicketSystem.Core\TicketSystem.Core.csproj">
+      <Project>{6bbf3db1-8499-4761-9f35-2dfc60e76259}</Project>
+      <Name>TicketSystem.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TicketSystem.ThreadManager\TicketSystem.ThreadManager.csproj">
+      <Project>{8b4cdbaa-3073-4082-a22b-2f3043496afc}</Project>
+      <Name>TicketSystem.ThreadManager</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

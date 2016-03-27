@@ -71,7 +71,7 @@ namespace TicketSystem.LogHelper
                                     this.LogTime.Second,
                                     this.LogTime.Millisecond);
 
-            sb.AppendFormat("|Level={2}|ThreadID={3}|", LogLevel, this.ThreadId);
+            sb.AppendFormat("|Level={0}|ThreadID={1}|", LogLevel, this.ThreadId);
 
             if (!string.IsNullOrWhiteSpace(this.LogFormat))
             {

@@ -16,5 +16,10 @@ namespace TicketSystem.GlobalContext
         public string ClientIP { get; set; }
         public int ClientPort { get; set; }
         public long RequestId { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("SessionID:{0}, ClientIP:{1},ClientPort:{2},RequestID:{3}", SessionID, ClientIP, ClientPort, RequestId);
+        }
     }
 }

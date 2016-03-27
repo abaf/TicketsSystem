@@ -177,37 +177,10 @@ namespace TicketSystem.LogHelper
         }
 
         private static LogLevel LastedLogLevel = LogLevel.None; 
-        private static DateTime LastedLogTime = DateTime.Now; 
-        private static StringBuilder ConsoleLogCache = new StringBuilder();
 
 
         private void OnLogData(LogData data)
         {
-            if (ConsoleLogCache.Length > 0 && (DateTime.Now - LastedLogTime).TotalMilliseconds >= 200)
-            {
-                #region output screen cache
-
-                if (Environment.UserInteractive)
-                {
-                    string logLine = ConsoleLogCache.ToString();
-
-                    if (Environment.UserInteractive)
-                    {
-                        SetConsoleColor(LastedLogLevel);
-
-                        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                            WindowsConsoleHelper.Write(logLine);
-                        else
-                            Console.Write(logLine);
-                    }
-                }
-
-                #endregion
-
-                ConsoleLogCache.Clear();
-                LastedLogTime = DateTime.Now;
-            }
-
             if (data == null)
                 return;
 
@@ -217,32 +190,13 @@ namespace TicketSystem.LogHelper
                 && data.LogLevel >= ConsoleLogLevel
                 && Environment.UserInteractive)
             {
-                strLogMsg = data.ToLogString();
+                strLogMsg = string.Format("{0} \r\n", data.ToLogString());
 
+                if (strLogMsg.Length > 0)
                 {
-                    if (ConsoleLogCache.Length > 0
-                        && (LastedLogLevel != data.LogLevel
-                          || (DateTime.Now - LastedLogTime).TotalMilliseconds >= 200
-                          || ConsoleLogCache.Length >= 32 * 1024)
-                        )
-                    {
-                        string logLine = ConsoleLogCache.ToString();
-
-                        if (Environment.UserInteractive)
-                        {
-                            SetConsoleColor(LastedLogLevel);
-
-                            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                                WindowsConsoleHelper.Write(logLine);
-                            else
-                                Console.Write(logLine);
-                        }
-                        //clean up
-                        ConsoleLogCache.Clear();
-                        LastedLogTime = DateTime.Now;
-                    }
+                    SetConsoleColor(data.LogLevel);
+                    WindowsConsoleHelper.Write(strLogMsg);
                 }
-                ConsoleLogCache.AppendLine(strLogMsg);
                 LastedLogLevel = data.LogLevel;
             }
 

@@ -21,8 +21,8 @@ namespace TicketSystem.Message
 
         public override string ToString()
         {
-            return string.Format("BuyTicketRequest:{RequestId:{0},Route:{1},StartStation:{2},EndStation:{3},Tickects:{4},Time:{5}}",
-                RequestId, Route, StartStation, EndStation, Tickets, OccurTime.ToString("YYYYMMDDhhmmss.fff"));
+            return string.Format("BuyTicketResponse:[RequestId:{0},Route:{1},StartStation:{2},EndStation:{3},Tickects:{4},Time:{5}]",
+                RequestId, Route, StartStation, EndStation, Tickets, OccurTime.ToString("yyyy-MM-dd HH:mm:ss.fff"));
         }
     }
 }

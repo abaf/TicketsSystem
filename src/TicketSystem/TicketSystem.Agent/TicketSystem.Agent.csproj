@@ -42,12 +42,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentConfig.cs" />
+    <Compile Include="AgentContext.cs" />
     <Compile Include="BussinessRequest.cs" />
+    <Compile Include="ListenThread.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReceiveProcess.cs" />
+    <Compile Include="SessionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TicketSystem.LogHelper\TicketSystem.LogHelper.csproj">
+      <Project>{55c3ae81-688a-4fa5-9649-396aeec2676c}</Project>
+      <Name>TicketSystem.LogHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TicketSystem.Message\TicketSystem.Message.csproj">
+      <Project>{0e458fa9-79f8-49cd-aa79-2ede9afca92e}</Project>
+      <Name>TicketSystem.Message</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TicketSystem.Redis\TicketSystem.Redis.csproj">
+      <Project>{42fe90cd-81fb-4a62-830e-15ebd921abb1}</Project>
+      <Name>TicketSystem.Redis</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TicketSystem.ThreadManager\TicketSystem.GlobalContext.csproj">
+      <Project>{8b4cdbaa-3073-4082-a22b-2f3043496afc}</Project>
+      <Name>TicketSystem.GlobalContext</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TicketSystem.Utils\TicketSystem.Utils.csproj">
+      <Project>{157d5c74-91e7-4cf9-a68e-f065df633689}</Project>
+      <Name>TicketSystem.Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

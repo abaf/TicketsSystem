@@ -381,7 +381,7 @@ namespace TicketSystem.Redis
                     catch (Exception err)
                     {
                         this.IsException = true;
-                        ThreadContext.LogHelper.LogErrMsg(err, "Send request to {0}, queue {1} failed，reason:{2}", this.Host, service, err.Message);
+                        ThreadContext.LogHelper.LogErrMsg(err, "Send request to {0}, queue {1} failed，reason:{2}\r\n", this.Host, service, err.Message);
                         throw;
                     }
                     finally

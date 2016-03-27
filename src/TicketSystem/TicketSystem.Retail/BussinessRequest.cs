@@ -62,7 +62,8 @@ namespace TicketSystem.Retail
                 var soldTicket = retailer.BuyTicket(requestMessage);
                 responseMessage.Tickets = soldTicket.TicketsSold;
                 ThreadContext.LogHelper.LogInfoMsg("Process finished, request, {0}", requestMessage.ToString());
-
+                //adjust response's occur time
+                responseMessage.OccurTime = DateTime.Now;
                 Task sendResponseTask = new Task(() => SendResponseToRedis(responseMessage, package.SessionData));
                 sendResponseTask.Start();
             }

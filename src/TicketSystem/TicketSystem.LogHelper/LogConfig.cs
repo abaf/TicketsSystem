@@ -25,7 +25,7 @@ namespace TicketSystem.LogHelper
         {
             LogLevel = LogLevel.Info;
             LogPath = Path.Combine(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Log");
-            LogEncoding = "UTF8";
+            LogEncoding = "UTF-8";
             LogType = LogType.DisplayAndLogFile;
             MaxLogFileSize = 20;
 

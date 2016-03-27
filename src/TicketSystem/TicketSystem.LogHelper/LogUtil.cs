@@ -23,7 +23,7 @@ namespace TicketSystem.LogHelper
             LogQueue = LogQueue.GetInstance();
         }
 
-        public static void UnInitialize()
+        public void UnInitialize()
         {
             LogQueue.GetInstance().StopProcess();
         }
@@ -41,6 +41,16 @@ namespace TicketSystem.LogHelper
             if (LogQueue.LogThread == null || LogUtil.LogLevel > LogLevel.Info) return null;
 
             return LogInfoMsg(logType, null, strFormat, args);
+        }
+        public LogData LogInfoMsg(LogType logType, Exception error, string strFormat, params object[] args)
+        {
+            if (LogQueue.LogThread == null || LogUtil.LogLevel > LogLevel.Info) return null;
+
+            LogData data = new LogData(logType, LogLevel.Info, error, strFormat, args);
+
+            LogQueue.Enqueue(data);
+
+            return data;
         }
 
         #endregion
@@ -92,6 +102,16 @@ namespace TicketSystem.LogHelper
             if (LogQueue.LogThread == null || LogUtil.LogLevel > LogLevel.Debug) return null;
 
             return LogDebugMsg(logType, null, strFormat, args);
+        }
+        public virtual LogData LogDebugMsg(LogType logType, Exception error, string strFormat, params object[] args)
+        {
+            if (LogQueue.LogThread == null || LogUtil.LogLevel > LogLevel.Debug) return null;
+
+            LogData data = new LogData(logType, LogLevel.Debug, error, strFormat, args);
+
+            LogQueue.Enqueue(data);
+
+            return data;
         }
         #endregion
 

@@ -13,7 +13,7 @@ namespace TicketSystem.LogHelper
         private string LogRootPath { get; set; }
         private FileStream fLogFileStream = null;
         private string LogFileName = string.Empty;
-        private Encoding MsgEncoding = Encoding.GetEncoding("UTF8");
+        private Encoding MsgEncoding = Encoding.GetEncoding("UTF-8");
         private int MaxFileSize = MAX_FILE_SIZE;
 
         private string moduleName;
@@ -27,7 +27,7 @@ namespace TicketSystem.LogHelper
             }
             catch (Exception)
             {
-                MsgEncoding = Encoding.GetEncoding("UTF8");
+                MsgEncoding = Encoding.GetEncoding("UTF-8");
             }
 
             #endregion
@@ -48,14 +48,15 @@ namespace TicketSystem.LogHelper
 
         public void Open()
         {
-            string fileNamePattern = String.Format("{0}.{1}*.log", moduleName, DateTime.Now.ToString("YYYYMMDD"));
+            string fileNamePattern = String.Format("{0}.{1}*.log", moduleName, DateTime.Now.ToString("yyyyMMdd"));
 
             // get max number of today's log
             int maxLogFileSeqNo = 0;
-            string[] files = Directory.GetFiles(LogRootPath, string.Format("*{0}.{1}*.*", moduleName, DateTime.Now.ToString("YYYYMMDD")), SearchOption.TopDirectoryOnly);
+            string[] files = Directory.GetFiles(LogRootPath, string.Format("*{0}.{1}*.*", moduleName, DateTime.Now.ToString("yyyyMMdd")), SearchOption.TopDirectoryOnly);
             foreach (var filename in files)
             {
-                int sindex = filename.LastIndexOf(moduleName) + 6;
+                var ymd = DateTime.Now.ToString("yyyyMMdd");
+                int sindex = filename.LastIndexOf(ymd) + ymd.Length;
                 int eindex = filename.LastIndexOf(".");
                 string snum = filename.Substring(sindex, eindex - sindex);
                 if (!string.IsNullOrWhiteSpace(snum))
@@ -70,13 +71,13 @@ namespace TicketSystem.LogHelper
             int tryOpenCount = 1000;
             while (tryOpenCount-- > 0)
             {
-                logFileName = Path.Combine(LogRootPath, String.Format("{0}.{1}{2}.log", moduleName, DateTime.Now.ToString("YYYYMMDD"), maxLogFileSeqNo));
+                logFileName = Path.Combine(LogRootPath, String.Format("{0}.{1}.{2}.log", moduleName, DateTime.Now.ToString("yyyyMMdd"), maxLogFileSeqNo));
 
                 FileInfo info = new FileInfo(logFileName);
                 if (info.Exists && info.Length >= MaxFileSize)
                 {
                     maxLogFileSeqNo++;
-                    logFileName = Path.Combine(LogRootPath, String.Format("{0}.{1}{2}.log", moduleName, DateTime.Now.ToString("YYYYMMDD"), maxLogFileSeqNo));
+                    logFileName = Path.Combine(LogRootPath, String.Format("{0}.{1}.{2}.log", moduleName, DateTime.Now.ToString("yyyyMMdd"), maxLogFileSeqNo));
 
                 }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TicketSystem.LogHelper
 {
-    class LogUtil
+    public class LogUtil
     {
         public static LogLevel LogLevel { get; set; }
 
@@ -21,6 +21,11 @@ namespace TicketSystem.LogHelper
         public LogUtil()
         {
             LogQueue = LogQueue.GetInstance();
+        }
+
+        public static void UnInitialize()
+        {
+            LogQueue.GetInstance().StopProcess();
         }
 
         #region Info Log methods

@@ -6,26 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using TicketSystem.ThreadManager;
 namespace TicketSystem.Redis
 {
+    /// <summary>
+    /// The proxy to send/get data from redis server
+    /// </summary>
     public class ClientProxy
     {
         /// <summary>
-		/// The key of the queue which stores the ticket buying request
-		/// </summary>
-		/// <param name="clientNo"></param>
-		/// <returns></returns>
-		internal static string GetResponseQueueKey()
-        {
-            var process = Process.GetCurrentProcess();
-            return string.Format("QUEUE:RSP@{0}@{1}@{2}:{3}", System.Net.Dns.GetHostName(), process.ProcessName, process.Id);
-        }
-
-        /// <summary>
 		/// The key of the response queue
 		/// </summary>
-		string RspQueueKey = "";
+		string QueueKey = "";
 
         /// <summary>
         /// Redis client
@@ -49,6 +41,7 @@ namespace TicketSystem.Redis
         /// </summary>
         ManualResetEvent ExitEvent = new ManualResetEvent(false);
 
+        private Action<RedisPackage> Callback;
 
         #region Properties
 
@@ -87,13 +80,13 @@ namespace TicketSystem.Redis
 
         #endregion
 
-        public ClientProxy(RedisHost host)
+        public ClientProxy(RedisHost host, string watchingQueue, Action<RedisPackage> callback)
         {
             if (host == null)
                 throw new ArgumentNullException("host");
 
             this.Host = host;
-
+            this.Callback = callback;
             ExpireTimeout = 60; // default expire time of the queue
 
             //init redis client
@@ -104,7 +97,7 @@ namespace TicketSystem.Redis
             client.Db = Host.DB;
             RequestClient = client;
 
-            RspQueueKey = GetResponseQueueKey();
+            QueueKey = watchingQueue;
             LastActiveTime = DateTime.Now - TimeSpan.FromSeconds(ExpireTimeout);
         }
 
@@ -120,7 +113,7 @@ namespace TicketSystem.Redis
             if (interval < 0 || interval >= ExpireTimeout / 2)
             {
                 //reset the expire time
-                conn.Expire(this.RspQueueKey, ExpireTimeout);
+                conn.Expire(this.QueueKey, ExpireTimeout);
 
                 LastActiveTime = DateTime.Now;
             }
@@ -159,13 +152,12 @@ namespace TicketSystem.Redis
                 if ((ResponseThread != null && ResponseThread.IsAlive))
                     return;
 
-                //启动一个接受应答的线程
+                //start a thread to listen the redis
                 ResponseThread = new Thread((ThreadStart)delegate
                 {
                     StopEvent.Reset();
                     ExitEvent.Reset();
 
-                    //建立正常的连接前，先认为是有异常的（未准备好），避免发送了请求但是收不到应答
                     this.IsException = true;
 
                     while (true)
@@ -185,42 +177,24 @@ namespace TicketSystem.Redis
                         {
                             this.IsException = true;
 
-                            //应该是连接到Redis出异常了
-                            if (DirectoryService.RedisLogHelper != null)
-                                DirectoryService.RedisLogHelper.LogErrMsg(err, "队列连线{0}获取应答数据失败，原因：{1}", this.Host, err.Message);
-                            else
-                                break;
-
-                            //抛出事件
-                            try
-                            {
-                                if (ConnectionException != null)
-                                    ConnectionException(this, err);
-                            }
-                            catch (Exception) { }
-
-                            //有异常发生，稍等一会儿再尝试，避免异常时占用大量CPU
-                            if (StopEvent == null || StopEvent.WaitOne(Timeouts.RedisOpt))
+                            ThreadContext.LogHelper.LogErrMsg("Error get response data from queue {0}, reason:{1}", Host, err.Message);
+                            //If there is exception caught, then wait a while to fetch again
+                            if (StopEvent == null || StopEvent.WaitOne(Timeouts.RedisOption))
                                 break;
                         }
                     }
 
-                    //退出时设置，表示线程已经终止
                     ResponseThread = null;
                     ExitEvent.Set();
                 });
 
-                //启动线程
+                //start listen thread
                 ResponseThread.IsBackground = true;
                 ResponseThread.Priority = ThreadPriority.AboveNormal;
                 ResponseThread.Start();
             }
         }
 
-        /// <summary>
-        /// 停止处理
-        /// </summary>
-        /// <param name="timeout">超时时间设置</param>
         public void StopProcess(int timeout = 5000)
         {
             lock (this)
@@ -230,10 +204,8 @@ namespace TicketSystem.Redis
 
                 bool sameThread = ResponseThread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
 
-                //停止事件
                 StopEvent.Set();
 
-                //线程退出事件
                 if (!sameThread && !ExitEvent.WaitOne(timeout))
                 {
                     try
@@ -244,49 +216,38 @@ namespace TicketSystem.Redis
                     finally { ResponseThread = null; }
                 }
 
-                //如果需要应答
-                if (NeedResponse)
+                try
                 {
-                    try
-                    {
-                        //如果应答队列中还有数据，则报警
-                        if ((RequestClient as RedisClient).Exists(RspQueueKey) == 1
-                            && (RequestClient as RedisClient).Type(RspQueueKey) == "list"
-                            && (RequestClient as RedisClient).LLen(RspQueueKey) > 0
-                            )
-                            DirectoryService.RedisLogHelper.LogWarnMsg("应答队列{0}中存在未处理的应答数据，将被清空.", RspQueueKey);
-                    }
-                    catch (Exception)
-                    {
-                        //如果断网，或者RedisServer停止，此处忽略这个错误
-                    }
+                    //If the queue still have data, the popup a warning
+                    if ((RequestClient as RedisClient).Exists(QueueKey) == 1
+                        && (RequestClient as RedisClient).Type(QueueKey) == "list"
+                        && (RequestClient as RedisClient).LLen(QueueKey) > 0 )
+                        ThreadContext.LogHelper.LogWarnMsg("The queue {0} still have data, and will be clean up!", QueueKey);
+                }
+                catch (Exception)
+                {
+                    //disconnection or redis server is down
                 }
             }
         }
 
-        /// <summary>
-        /// 获取Server端的应答数据
-        /// </summary>
         [System.Runtime.ExceptionServices.HandleProcessCorruptedStateExceptions]
         void FetchResponseProcess()
         {
-            //一直占用一个连接
             using (var conn = new RedisClient(Host.Host, Host.Port, Host.Password, Host.SSL))
             {
                 conn.ConnectTimeout = Timeouts.WaitConnection;
                 conn.ReceiveTimeout = Timeouts.SocketReceiveTimeout;
                 conn.SendTimeout = Timeouts.SocketSendTimeout;
 
-                #region 测试网络连通性
+                #region Test the connectivity
 
-                //尝试一下是否能够Ping通
                 try
                 {
-                    //会连接网络
                     conn.Db = Host.DB;
 
                     if (!conn.Ping())
-                        throw new Exception(string.Format("与队列服务器{0}的连线Ping失败", this.Host));
+                        throw new Exception(string.Format("Failed to Ping the redis server {0}", this.Host));
                 }
                 catch (Exception)
                 {
@@ -294,7 +255,7 @@ namespace TicketSystem.Redis
                     throw;
                 }
 
-                //既然已经连接上了，尝试帮助把发送的连接对象也重连一下
+                //Try to ping the request client object
                 if (RequestClient != null)
                 {
                     lock (RequestClient)
@@ -309,40 +270,30 @@ namespace TicketSystem.Redis
                     }
                 }
 
-                //Ping通了
+                //Ping is ok
                 this.IsException = false;
 
                 #endregion
 
-                //错误恢复了
                 this.IsException = false;
 
-                //一直循环，直至接收到退出事件
                 while (true)
                 {
-                    if (DirectoryService.DefaultInstance == null)
-                        break;
-
-                    //每隔一定的时间，需要修改一下有效期
                     RefreshQueue(conn);
 
-                    #region 获取应答数据
+                    #region get response data
 
-                    //获取应答数据
                     byte[] response = null;
 
-                    //每次查询应答数据的超时时间（不能太长，否则响应退出事件慢）
+                    //the timeout for query the response data
                     int timeout = Math.Min(conn.ReceiveTimeout, 5000);
 
                     byte[][] datas = null;
 
-                    //每个客户端都有一个自己的应答队列（如果Redis服务器系统时间修改，可能导致永远Block）
-                    datas = conn.BRPop(RspQueueKey, (int)(timeout / 1000));
+                    datas = conn.BRPop(QueueKey, (int)(timeout / 1000));
 
-                    //错误恢复了
                     this.IsException = false;
 
-                    //超时
                     if (datas == null || datas.Length != 2)
                     {
                         if (StopEvent.WaitOne(0))
@@ -351,48 +302,129 @@ namespace TicketSystem.Redis
                         continue;
                     }
 
+                    // response: {"queuename","value"}
                     response = datas[1];
 
                     #endregion
 
-                    #region 解析应答数据
+                    #region parse response data
 
-                    //解析应答数据
                     RedisPackage pkg = new RedisPackage();
                     pkg.FromBytes(response);
-
-                    //检查客户端编号
-                    if (this.RspQueueKey != pkg.ResponseKey)
-                        throw new Exception("应答数据异常");
-
-                    ResponseId = Math.Max(ResponseId, pkg.RequestId);
-
-                    //检查应答时间
-                    var rspTime = new DateTime(pkg.OccurTime);
-                    //如果应答请求处理超过一定时间，报警处理
-                    var elapsedMS = (DirectoryService.Now - rspTime).TotalMilliseconds;
-                    if (elapsedMS > Timeouts.Queue)
-                        DirectoryService.RedisLogHelper.LogPerformaceMsg("应答数据在队列中已经等待{0}毫秒.", elapsedMS);
 
                     try
                     {
                         Stopwatch sw = Stopwatch.StartNew();
 
-                        //处理应答数据
-                        OnResponse(pkg.Service, pkg.RequestId, pkg.Tag, pkg.Data);
-
-                        if (sw.ElapsedMilliseconds > Timeouts.Response && DirectoryService.LogHelper != null)
-                            DirectoryService.LogHelper.LogPerformaceMsg("应答处理时间过长, 耗时: {0} 毫秒", sw.ElapsedMilliseconds);
+                        //process response data
+                        if (Callback != null)
+                        {
+                            Callback(pkg);
+                        }
                     }
                     catch (ThreadAbortException) { throw; }
                     catch (Exception err)
                     {
-                        if (DirectoryService.LogHelper != null)
-                            DirectoryService.LogHelper.LogErrMsg(err, "处理应答数据失败");
+                        ThreadContext.LogHelper.LogErrMsg(err, "RequestID={0}|Error process response data", pkg.RequestId);
                     }
 
                     #endregion
                 }
+            }
+        }
+
+        /// <summary>
+        /// Send data request
+        /// </summary>
+        /// <param name="service">Queue name</param>
+        /// <param name="requestId"></param>
+        /// <param name="request"></param>
+        /// <param name="timeout"></param>
+        [System.Runtime.ExceptionServices.HandleProcessCorruptedStateExceptions]
+        internal void SendRequest(string service, long requestId, byte[] request, Int32 timeout = 1000)
+        {
+            if (timeout < 0)
+                throw new Exception("Invalid timeout value");
+
+            //check the response thread
+            if (ResponseThread == null || !ResponseThread.IsAlive || ExitEvent.WaitOne(0))
+                throw new Exception("Response thread not started or exited");
+
+            //serialization
+            byte[] buffer = new RedisPackage
+            {
+                Service = service,
+                RequestId = requestId,
+                OccurTime = DateTime.Now.Ticks,
+                Data = request
+            }.ToBytes();
+
+            try
+            {
+                #region send request
+
+                lock (RequestClient)
+                {
+                    if (this.IsException || StopEvent.WaitOne(0))
+                        throw new Exception("Request not sent!");
+
+                    try
+                    {
+                        this.IsBusy = true;
+
+                        if ((RequestClient as RedisClient).LPush(service, buffer) == 0)
+                            throw new Exception(string.Format("Error sending request to redis, RequestID: {0}", requestId));
+
+                        this.IsException = false;
+                    }
+                    catch (Exception err)
+                    {
+                        this.IsException = true;
+                        ThreadContext.LogHelper.LogErrMsg(err, "Send request to {0}, queue {1} failed，reason:{2}", this.Host, service, err.Message);
+                        throw;
+                    }
+                    finally
+                    {
+                        this.IsBusy = false;
+                    }
+                }
+
+                #endregion
+            }
+            finally
+            { }
+        }
+
+        public void Dispose()
+        {
+            lock (this)
+            {
+                if (IsDisposed) return;
+
+                IsDisposed = true;
+
+                StopProcess();
+
+                if (RequestClient != null)
+                {
+                    try
+                    {
+                        lock (RequestClient)
+                        {
+                            RequestClient.Dispose();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    finally
+                    {
+                        RequestClient = null;
+                    }
+                }
+
+                StopEvent.Dispose();
+                ExitEvent.Dispose();
             }
         }
     }

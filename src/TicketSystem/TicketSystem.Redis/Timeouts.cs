@@ -21,5 +21,7 @@ namespace TicketSystem.Redis
         public const Int32 SocketReceiveTimeout = 10 * 1000;
 
         public const Int32 WaitConnection = 5000;
+
+        public const Int32 RedisOption = 3000;
     }
 }

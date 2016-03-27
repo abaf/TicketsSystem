@@ -49,6 +49,10 @@
       <Project>{6bbf3db1-8499-4761-9f35-2dfc60e76259}</Project>
       <Name>TicketSystem.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TicketSystem.LogHelper\TicketSystem.LogHelper.csproj">
+      <Project>{55c3ae81-688a-4fa5-9649-396aeec2676c}</Project>
+      <Name>TicketSystem.LogHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

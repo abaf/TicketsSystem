@@ -30,17 +30,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ServiceStack.Common">
-      <HintPath>F:\根网科技\HTS\Src\HTS\Main\Kernel\Redist\ServiceStack.Common.dll</HintPath>
+    <Reference Include="ServiceStack.Common, Version=3.9.44.0, Culture=neutral, PublicKeyToken=e5d70ba0f6fb5d22, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Redist\ServiceStack.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>F:\根网科技\HTS\Src\HTS\Main\Kernel\Redist\ServiceStack.Interfaces.dll</HintPath>
+    <Reference Include="ServiceStack.Interfaces, Version=3.9.44.0, Culture=neutral, PublicKeyToken=e5d70ba0f6fb5d22, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Redist\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Redis">
-      <HintPath>F:\根网科技\HTS\Src\HTS\Main\Kernel\Redist\ServiceStack.Redis.dll</HintPath>
+    <Reference Include="ServiceStack.Redis, Version=3.9.42.0, Culture=neutral, PublicKeyToken=e5d70ba0f6fb5d22, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Redist\ServiceStack.Redis.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Text">
-      <HintPath>F:\根网科技\HTS\Src\HTS\Main\Kernel\Redist\ServiceStack.Text.dll</HintPath>
+    <Reference Include="ServiceStack.Text, Version=3.9.44.0, Culture=neutral, PublicKeyToken=e5d70ba0f6fb5d22, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Redist\ServiceStack.Text.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -72,6 +76,12 @@
       <Project>{157d5c74-91e7-4cf9-a68e-f065df633689}</Project>
       <Name>TicketSystem.Utils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Redist\ServiceStack.Common.dll" />
+    <Content Include="Redist\ServiceStack.Interfaces.dll" />
+    <Content Include="Redist\ServiceStack.Redis.dll" />
+    <Content Include="Redist\ServiceStack.Text.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

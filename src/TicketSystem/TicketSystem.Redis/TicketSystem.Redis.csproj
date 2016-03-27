@@ -64,9 +64,9 @@
       <Project>{55c3ae81-688a-4fa5-9649-396aeec2676c}</Project>
       <Name>TicketSystem.LogHelper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TicketSystem.ThreadManager\TicketSystem.ThreadManager.csproj">
+    <ProjectReference Include="..\TicketSystem.ThreadManager\TicketSystem.GlobalContext.csproj">
       <Project>{8b4cdbaa-3073-4082-a22b-2f3043496afc}</Project>
-      <Name>TicketSystem.ThreadManager</Name>
+      <Name>TicketSystem.GlobalContext</Name>
     </ProjectReference>
     <ProjectReference Include="..\TicketSystem.Utils\TicketSystem.Utils.csproj">
       <Project>{157d5c74-91e7-4cf9-a68e-f065df633689}</Project>

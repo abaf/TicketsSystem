@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TicketSystem.GlobalContext
+namespace TicketSystem.Agent
 {
-    public class TaskManager
+    public class BussinessRequest
     {
-
+        public BussinessRequest()
+        { }
     }
 }

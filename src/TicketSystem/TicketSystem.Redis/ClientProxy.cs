@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TicketSystem.ThreadManager;
+using TicketSystem.GlobalContext;
 namespace TicketSystem.Redis
 {
     /// <summary>
@@ -341,7 +341,7 @@ namespace TicketSystem.Redis
         /// <param name="request"></param>
         /// <param name="timeout"></param>
         [System.Runtime.ExceptionServices.HandleProcessCorruptedStateExceptions]
-        internal void SendRequest(string service, long requestId, byte[] request, Int32 timeout = 1000)
+        public void SendRequest(string service, long requestId, byte[] sessionData, byte[] request, Int32 timeout = 1000)
         {
             if (timeout < 0)
                 throw new Exception("Invalid timeout value");
@@ -356,7 +356,8 @@ namespace TicketSystem.Redis
                 Service = service,
                 RequestId = requestId,
                 OccurTime = DateTime.Now.Ticks,
-                Data = request
+                Data = request,
+                SessionData = sessionData
             }.ToBytes();
 
             try

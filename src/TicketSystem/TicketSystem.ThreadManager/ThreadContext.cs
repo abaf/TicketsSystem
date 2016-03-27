@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TicketSystem.Core;
 using TicketSystem.LogHelper;
-namespace TicketSystem.ThreadManager
+namespace TicketSystem.GlobalContext
 {
     public class ThreadContext
     {
@@ -30,5 +30,27 @@ namespace TicketSystem.ThreadManager
                 return _LogHelper;
             }
         }
+
+
+        private static GlobalConfig _GlobalConfig;
+        public static GlobalConfig GlobalConfig
+        {
+            get
+            {
+                if (_GlobalConfig != null)
+                    return _GlobalConfig;
+
+                lock (SyncRoot)
+                {
+                    if (_GlobalConfig == null)
+                        _GlobalConfig = new GlobalConfig();
+                }
+
+                return _GlobalConfig;
+            }
+        }
+
+        public static string RequestQueueName = "Tickets:REQ";
+        public static string ResponseQueueName = "Tickets:RSP";
     }
 }

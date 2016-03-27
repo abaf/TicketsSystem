@@ -22,10 +22,6 @@ namespace TicketSystem.Redis
         public long RequestId { get; set; }
 
         /// <summary>
-        /// the session id of the message
-        /// </summary>
-        public long SessionId { get; set;}
-        /// <summary>
         /// Time occured
         /// </summary>
         public long OccurTime { get; set; }
@@ -35,6 +31,7 @@ namespace TicketSystem.Redis
         /// </summary>
         public byte[] Data { get; set; }
 
+        public byte[] SessionData { get; set; }
         /// <summary>
         /// Serialization
         /// </summary>
@@ -53,11 +50,12 @@ namespace TicketSystem.Redis
                     //request id
                     bw.Write(this.RequestId);
 
-                    //client id
-                    bw.Write(this.SessionId);
-
                     //request time
                     bw.Write(this.OccurTime);
+
+                    bytes = this.SessionData ?? new byte[0];
+                    bw.Write((UInt16)bytes.Length);
+                    bw.Write(bytes);
 
                     //request data
                     bytes = this.Data ?? new byte[0];
@@ -83,11 +81,10 @@ namespace TicketSystem.Redis
 
                     //The number of the original request
                     this.RequestId = br.ReadInt64();
-                    // the id the the client
-                    this.SessionId = br.ReadInt64();
                     //The time reponsed
                     this.OccurTime = br.ReadInt64();
-
+                    //session data
+                    this.SessionData = br.ReadBytes(br.ReadUInt16());
                     //data
                     this.Data = br.ReadBytes(br.ReadInt32()); 
                 }

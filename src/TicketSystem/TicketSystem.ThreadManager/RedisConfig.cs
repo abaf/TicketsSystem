@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace TicketSystem.GlobalContext
 {
-    public class TaskManager
+    public class RedisConfig
     {
+        public string Host { get; set; }
 
+        public int Port { get; set; }
     }
 }

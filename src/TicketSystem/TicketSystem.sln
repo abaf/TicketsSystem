@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSystem.Message", "Tic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSystem.Redis", "TicketSystem.Redis\TicketSystem.Redis.csproj", "{42FE90CD-81FB-4A62-830E-15EBD921ABB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSystem.ThreadManager", "TicketSystem.ThreadManager\TicketSystem.ThreadManager.csproj", "{8B4CDBAA-3073-4082-A22B-2F3043496AFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketSystem.GlobalContext", "TicketSystem.ThreadManager\TicketSystem.GlobalContext.csproj", "{8B4CDBAA-3073-4082-A22B-2F3043496AFC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "server", "server", "{D6AF97A9-A9AB-4789-A953-63DC12237853}"
 EndProject

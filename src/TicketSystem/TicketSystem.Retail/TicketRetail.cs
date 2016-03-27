@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TicketSystem.ThreadManager;
+using TicketSystem.GlobalContext;
 using TicketSystem.Core;
+using TicketSystem.Message;
 namespace TicketSystem.Retail
 {
-    public class TicketRetail
+    internal class TicketRetail
     {
         public static object synctRoot = new object();
 
+        internal SoldTicket BuyTicket(BuyTicketRequest request)
+        {
+            return BuyTicket(request.StartStation, request.EndStation, request.Tickets);
+        }
         /// <summary>
         /// The core logic for buying tickets
         /// </summary>
@@ -18,7 +23,7 @@ namespace TicketSystem.Retail
         /// <param name="endStation"></param>
         /// <param name="tickets"></param>
         /// <returns></returns>
-        public SoldTicket BuyTicket(string startStation, string endStation, int tickets)
+        private SoldTicket BuyTicket(string startStation, string endStation, int tickets)
         {
             lock (synctRoot)
             {

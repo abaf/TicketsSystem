@@ -54,9 +54,6 @@
     <None Include="TicketSystemDesignNotice.doc" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\TicketSystem.LogHelper\TicketSystem.LogHelper.csproj">
       <Project>{55c3ae81-688a-4fa5-9649-396aeec2676c}</Project>
       <Name>TicketSystem.LogHelper</Name>

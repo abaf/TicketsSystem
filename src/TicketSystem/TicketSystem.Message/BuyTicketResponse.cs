@@ -1,22 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TicketSystem.Message
 {
+    [DataContract]
     [Serializable]
     public class BuyTicketResponse: Message
     {
+        [DataMember]
         public long RequestId { get; set; }
+        [DataMember]
         public string Route { get; set; }
+        [DataMember]
         public string StartStation { get; set; }
+        [DataMember]
         public string EndStation { get; set; }
+        [DataMember]
         public DateTime OccurTime { get; set; }
         /// <summary>
         /// Actual tickets bought
         /// </summary>
+        [DataMember]
         public int Tickets { get; set; }
 
         public override string ToString()

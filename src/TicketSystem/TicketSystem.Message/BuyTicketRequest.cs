@@ -1,19 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TicketSystem.Message
 {
+    [DataContract]
     [Serializable]
     public class BuyTicketRequest : Message
     {
+        [DataMember]
         public long RequestId { get; set; }
+        [DataMember]
         public string Route { get; set; }
+        [DataMember]
         public string StartStation { get; set; }
+        [DataMember]
         public string EndStation { get; set; }
+        [DataMember]
         public DateTime OccurTime { get; set; }
+
         /// <summary>
         /// The tickets wanted
         /// </summary>
